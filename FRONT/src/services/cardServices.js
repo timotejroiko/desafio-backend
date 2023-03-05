@@ -8,8 +8,6 @@ const DEFAULT_HEADERS = {
     'Content-Type': 'application/json'
 };
 
-const toJson = resp => resp.json();
-
 const useCardService = () => {
 
     const authenticate = async () => {
@@ -19,7 +17,7 @@ const useCardService = () => {
             body: JSON.stringify(CREDENTIAL),
             headers: DEFAULT_HEADERS,
         })
-            .then(toJson)
+            .then(response => response.text())
             .then(token => `Bearer ${token}`)
             .then(token => ({ Authorization: token }))
             .catch(console.error);
