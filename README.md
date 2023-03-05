@@ -1,100 +1,37 @@
 # Desafio Técnico - Backend
 
-O propósito desse desafio é a criação de uma API que fará a persistência de dados de um quadro de kanban. Esse quadro possui listas, que contém cards.
+Este programa foi desenvolvido como resposta ao desafio proposto, O código fonte se encontra na pasta `BACK`.
 
-## Rodando o Frontend
+O programa consiste em um servidor baseado em `express` que disponibiliza um serviço REST API para interagir com o aplicativo da pasta `FRONT`.
 
-Um frontend de exemplo foi disponibilizado na pasta FRONT.
+## Instruções
 
-Para rodá-lo, faça:
+O backend deve ser inicializado e instalado utilizando `npm install` ou `yarn`. Após a instalação, os seguintes scripts estarão disponíveis:
 
-```console
-> cd FRONT
-> yarn
-> yarn start
-```
+- `npm run dev`: inicia o programa na pasta `src` através do `ts-node` pulando todos os outros scripts
+- `npm run lint`: executa o linter `eslint` nos arquivos da pasta `src`
+- `npm run test`: executa o script `lint` e em seguida executa os testes encontrados na pasta `test`
+- `npm run build`: executa o script `test` e em seguida faz a compilação dos arquivos typescript da pasta `src` para javascript na pasta `dist`
+- `npm run start`: executa o script `build` e em seguida inicia o programa na pasta `dist` através do `node`
 
-## Desafio
+Para alem da instalação, também é necessária a configuração das variáveis de ambiente. Estas variáveis podem estar no seu ambiente global, serem injetadas no programa ou estarem presentes no arquivo `.env` na pasta `BACK`.
 
-Você precisa criar uma API REST de acordo com os requisitos abaixo, que deve ser desenvolvido na pasta "BACK".
+As seguintes variavies de ambiente são obrigatórias:
 
-Para criar sua API você pode escolher entre duas tecnologias:
+- `LOGIN`: o login de usuário do aplicativo
+- `SENHA`: a senha de usuáiro do aplicativo
+- `CHAVE`: um texto aleatório que será utilizado como chave para a geração de tokens
 
-1. Javascript ou Typescript + NodeJS + Express
-2. C# + ASP.NET Core + WebApi
+Para além das variáveis obrigatórias, as seguintes variáveis opcionais também estão disponíveis:
 
-## Requisitos
+- `PORT`: porta desejada para rodar o servidor, caso omitido será usada a porta `5000`
+- `HOSTNAME`: o dominio origem do aplicativo que vai conectar ao servidor para efeitos de CORS, caso omitido será utilizado `localhost`
+- `DATABASE`: onde salvar a base de dados, caso omitido uma base de dados in-memory será criada e os dados serão perdidos toda a vez que reiniciar o servidor
 
-1. O sistema deve ter um mecanismo de login usando JWT, com um entrypoint que recebe `{ "login":"letscode", "senha":"lets@123"}` e gera um token.
+## Observações do Desafio
 
-2. O sistema deve ter um middleware que valide se o token é correto, valido e não está expirado, antes de permitir acesso a qualquer outro entrypoint. Em caso negativo retorne status 401.
+Alguns problemas foram encontrados durante o desenvolvimento do programa:
 
-3. O login e senha fornecidos devem estar em variáveis de ambiente e terem uma versão para o ambiente de desenvolvimento vinda de um arquivo .env no node ou de um arquivo de configuração no ASP.NET. Esse arquivo não deve subir ao GIT, mas sim um arquivo de exemplo sem os valores reais. O mesmo vale para qualquer "segredo" do sistema, como a chave do JWT.
+- O aplicativo frontend fornecido possúi vários problemas de vulnerabilidade e segurança devido a dependencias antigas e desatualizadas. Um destes problemas foi a depreciação e remoção de alguns sistemas vulneráveis do modulo SSL ocorrida a partir do NodeJS versão 17, o que causou o seguinte erro: `error:0308010C:digital envelope routines::unsupported`. A solução correta para este problema seria a revisão e atualização do aplicativo frontend fornecido, no entanto como solução rápida para dar seguimento ao desafio, a seguinte alteração foi feita no aplicativo frontend da pasta `FRONT`: Foi adicionada a instrução `--openssl-legacy-provider` ao script `start` encontrado no arquivo `package.json` do aplicativo frontend.
 
-4. Um card terá o seguinte formato: 
-
-```
-id: int | (guid [c#] | uuid [node])
-titulo : string, 
-conteudo: string, 
-lista: string
-```
-
-5. Os entrypoints da aplicação devem usar a porta 5000 e ser:
-
-```
-(POST)      http://0.0.0.0:5000/login/
-
-(GET)       http://0.0.0.0:5000/cards/
-(POST)      http://0.0.0.0:5000/cards/
-(PUT)       http://0.0.0.0:5000/cards/{id}
-(DELETE)    http://0.0.0.0:5000/cards/{id}
-```
-
-6. Para inserir um card o título, o conteúdo e o nome da lista devem estar preenchidos, o id não deve conter valor. Ao inserir retorne o card completo incluindo o id atribuído com o statusCode apropriado. Caso inválido, retorne status 400.
-
-7. Para alterar um card, o entrypoint deve receber um id pela URL e um card pelo corpo da requisição. Valem as mesmas regras de validação do item acima exceto que o id do card deve ser o mesmo id passado pela URL. Na alteração todos os campos são alterados. Caso inválido, retorne status 400. Caso o id não exista retorne 404. Se tudo correu bem, retorne o card alterado.
-
-8. Para remover um card, o entrypoint deve receber um id pela URL. Caso o id não exista retorne 404. Se a remoção for bem sucedida retorne a lista de cards.
-
-9. A listagem de cards deve enviar todos os cards em formato json, contendo as informações completas. 
-
-10. Deve ser usada alguma forma de persistência, no C# pode-se usar o Entity Framework (in-memory), no nodeJS pode ser usado Sequelize + sqlite (in-memory) ou diretamente o driver do sqlite (in-memory).
-
-11. Se preferir optar por utilizar um banco de dados "real", adicione um docker-compose em seu repositório que coloque a aplicação e o banco em execução, quando executado `docker-compose up` na raiz. A connection string e a senha do banco devem ser setados por ENV nesse arquivo.
-
-12. O campo conteúdo do card aceitará markdown, isso não deve impactar no backend, mas não custa avisar...
-
-13. Faça um filter (asp.net) ou middleware (nodejs) que escreva no console sempre que os entrypoints de alteração ou remoção forem usados, indicando o horário formatado como o datetime a seguir: `01/01/2021 13:45:00`. 
-
-A linha de log deve ter o seguinte formato (se a requisição for válida):
-
-`<datetime> - Card <id> - <titulo> - <Remover|Alterar>`
-
-Exemplo:
-
-```console
-> 01/01/2021 13:45:00 - Card 1 - Comprar Pão - Removido
-```
-
-14. O projeto deve ser colocado em um repositório GITHUB ou equivalente, estar público, e conter um readme.md que explique em detalhes qualquer comando ou configuração necessária para fazer o projeto rodar. Por exemplo, como configurar as variáveis de ambiente, como rodar migrations (se foram usadas). 
-
-15. A entrega será apenas a URL para clonarmos o repositório.
-
-## Diferenciais e critérios de avaliação
-
-Arquiteturas que separem responsabilidades, de baixo acoplamento e alta-coesão são preferíveis, sobretudo usando dependências injetadas, que permitam maior facilidade para testes unitários e de integração.
-
-Avaliaremos se o código é limpo (com boa nomenclatura de classes, variáveis, métodos e funções) e dividido em arquivos bem nomeados, de forma coesa e de acordo com boas práticas. Bem como práticas básicas como tratamento de erros.
-
-Desacoplar e testar as regras de negócios / validações / repositório com testes unitários será considerado um diferencial.
-
-O uso de typescript no node acompanhado das devidas configurações e tipagens bem feitas, bem como uso de técnicas de abstração usando interfaces (especialmente do repositório) serão consideradas um deferencial.
-
-O uso de Linter será considerado um diferencial.
-
-A criação de um docker-compose e de dockerfiles que ao rodar `docker-compose up` subam o sistema por completo (front, back e banco [se houver]) será considerado um diferencial.
-
-Teve dificuldade com algo, ou fez algo meio esquisito para simplificar algo que não estava conseguindo fazer? Deixe uma observação com a justificativa no readme.md para nós...
-
-Entregou incompleto, teve dificuldade com algo, ou fez algo meio esquisito para simplificar alguma coisa que não estava conseguindo fazer? Deixe uma observação com a justificativa no readme.md para nós...
+- O aplicativo frontend fornecido possui um bug que impossibilita a utilização do token `JWT` de forma correta. Ele espera que o token seja retornado pela API em forma de string, mas ao mesmo tempo ele tenta decodificar a resposta da API utilizando a função `response.json()`, o que causa um erro. Caso o token seja retornado em forma de JSON, o aplicativo frontend incorretamente gera o header de autorização `Bearer [object Object]` que também é incorreto. Para solucionar este problema, a seguinte alteração foi feita no aplicativo frontend da pasta `FRONT`: o arquivo `cardServices.js` foi para que o token seja decodificado como string utilizando `response.text()` ao vez de json.
