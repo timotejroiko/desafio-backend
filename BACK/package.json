@@ -7,9 +7,9 @@
   "types": "./types",
   "scripts": {
     "lint": "eslint ./src",
-    "test": "eslint ./src & jest ./test",
-    "build": "eslint ./src & jest ./test & tsc",
-    "start": "eslint ./src & jest ./test & tsc & node ./dist/index.js",
+    "test": "eslint ./src && jest ./test",
+    "build": "eslint ./src && jest ./test && tsc",
+    "start": "eslint ./src && jest ./test && tsc && node ./dist/index.js",
     "dev": "ts-node ./src/index.ts"
   },
   "dependencies": {

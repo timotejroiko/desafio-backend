@@ -17,7 +17,7 @@ app.use(cors, bodyparser);
 app.use("/cards", cardsRouter);
 app.post("/login", login.post.expressCallback);
 
-const port = process.env.PORT ?? 5000;
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
 	console.log(`Servidor iniciado na porta ${port}`);
 });
